@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load user_filters %}
+{% block title %}Пост "{{post.text|slice:":30"}}..."{% endblock %}
+{% block content %}
+  <div class="container py-5">
+  <div class="row">
+  <aside class="col-12 col-md-3">
+  <ul class="list-group list-group-flush">
+  <li class="list-group-item">
+    Дата публикации: {{ post.pub_date|date:"d E Y" }}
+  </li>
+  {% if post.group%}
+    <li class="list-group-item">
+      Группа {{ post.group }}: 
+      <a href="{% url 'post:group_list' post.group.slug %}">
+      все записи группы</a>
+    </li>
+  {% endif %}
+  <li class="list-group-item">
+    Автор: {{ post.author.get_full_name }}
+  </li>
+  <li class="list-group-item">
+  Всего постов автора: {{ post_count }}
+  </li>
+  <li class="list-group-item">
+  <a href="{% url 'post:profile' post.author.username %}">
+  все посты пользователя
+  </li></a>
+  </ul>
+  </aside>
+  <article class="col-12 col-md-9">
+  {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+    <img class="card-img my-2" src="{{ im.url }}">
+  {% endthumbnail %}
+  <p>{{ post.text|linebreaksbr }}</p>
+  {% if user.is_superuser or request.user == post.author %}
+  <p>
+    <a class="btn btn-primary" href="{% url 'post:post_edit' post_id=post.pk %}">
+      <span class="glyphicon glyphicon-pencil">
+        Редактировать запись
+      </span>
+    </a>
+  </p>
+   </article>
+  {% endif %}
+          {% if user.is_authenticated %}
+          <div class="card my-4">
+            <h5 class="card-header text-start">Добавить комментарий:</h5>
+            <div class="card-body text-end">
+              <form method="post" action="{% url 'post:add_comment' post.id %}">
+                {% csrf_token %}      
+                <div class="form-group mb-2 ">
+                  {{ form.text|addclass:'form-control' }}
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+
+        {% for comment in comments %}
+          <div class="media mb-4">
+            <div class="media-body">
+              <h5 class="mt-0">
+                <a href="{% url 'post:profile' comment.author.username %}">
+                  {{ comment.author.username }}
+                </a>
+              </h5>
+              <p>
+                {{ comment.created }}
+              </p>
+              <p>
+                {{ comment.text }}
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+    </a>
+  </div>     
+  </div>
+
+{% endblock %}

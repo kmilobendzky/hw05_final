@@ -1,0 +1,56 @@
+{% extends 'base.html' %} 
+{% block title %} 
+{% if is_edit %} 
+Редактировать пост 
+{% else %}          
+ Добавить пост  
+  {% endif %} 
+  {% endblock %} 
+{% block content %} 
+{% load user_filters %} 
+  <div class="container py-5">  
+        <div class="row justify-content-center"> 
+          <div class="col-md-8 p-5"> 
+              {% if is_edit %} 
+              <div class="card-header"> 
+                Редактирование поста 
+            <div class="card"> 
+              {% else %} 
+              <div class="card-header">         
+                Новый пост               
+              </div>  
+              </div>
+              {% endif %}
+                  {% if form.errors %}
+                    {% for error in form.errors %}
+                      <div class="alert alert-danger" role="alert">
+                        {{ error|escape }}
+                  {% endfor %}
+                    {% endif %} 
+              <form method="post">
+              {% csrf_token %}
+              {% for field in form %}
+              {{ field.label }}
+              {% if field.field.required %}
+              <span class="required">*</span>{% endif %} 
+              {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                      {% endif %}  
+              {{ field|addclass:"form-control" }}
+                {% endfor %}
+                  <div class="d-flex justify-content-end">  
+                    <button type="submit" class="btn btn-primary"> 
+                    {% if is_edit %} 
+                      Редактировать 
+                    {% else %} 
+                         Добавить 
+                      {% endif %} 
+                    </button>   
+                  </div>  
+                </form>  
+              </div>  
+            </div>  
+          </div>  
+        </div>  
+      </div>  
+{% endblock %} 
