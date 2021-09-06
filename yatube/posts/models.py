@@ -41,6 +41,7 @@ class Post(models.Model):
     def __str__(self):
         return self.text[:15]
 
+
 class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(
@@ -54,6 +55,7 @@ class Comment(models.Model):
         related_name='comments'
     )
     text = models.TextField()
+
 
 class Follow(models.Model):
     user = models.ForeignKey(

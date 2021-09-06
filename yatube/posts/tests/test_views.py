@@ -43,7 +43,8 @@ class TaskPagesTests(TestCase):
                 text=f'Test post {i}.', author=cls.user, group=cls.test_group)
             cls.posts_data_list.append(created_post)
         cls.user3_post = Post.objects.create(
-                text=f'Test post for following.', author=cls.user3, group=cls.test_group)
+            text='Test post for following.',
+            author=cls.user3, group=cls.test_group)
         cls.reverse_index = reverse('post:index')
         cls.reverse_group_list = reverse(
             'post:group_list',
@@ -60,13 +61,13 @@ class TaskPagesTests(TestCase):
         cls.reverse_post_edit = reverse(
             'post:post_edit', kwargs={'post_id': cls.posts_data_list[0].id})
         cls.reverse_post_create = reverse('post:post_create')
-        cls.small_gif = (            
-             b'\x47\x49\x46\x38\x39\x61\x02\x00'
-             b'\x01\x00\x80\x00\x00\x00\x00\x00'
-             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-             b'\x0A\x00\x3B'
+        cls.small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
         cls.uploaded_image = SimpleUploadedFile(
             name='small.gif',
@@ -108,14 +109,14 @@ class TaskPagesTests(TestCase):
             'group_list': cls.reverse_group_list,
             'group_list2': cls.reverse_group_list2,
             'profile': cls.reverse_profile,
-            'profile2': cls.reverse_profile2,            
+            'profile2': cls.reverse_profile2,
             'post_detail': cls.reverse_post_detail,
             'post_with_image_detail': cls.reverse_post_with_image_detail,
             'post_edit': cls.reverse_post_edit,
             'post_create': cls.reverse_post_create,
             'profile_follow': cls.reverse_profile_follow,
             'profile_unfollow': cls.reverse_profile_unfollow,
-            'follow_index': cls.reverse_follow_index        
+            'follow_index': cls.reverse_follow_index
         }
 
     @classmethod
@@ -244,7 +245,6 @@ class TaskPagesTests(TestCase):
             self.post_with_image.image,
             Post.objects.get(pk=context_post.pk).image)
 
-
     def test_post_edit_context(self):
         response_post_edit = self.authorized_client.get(
             self.REVERSE_LIBRARY['post_edit'])
@@ -277,9 +277,11 @@ class TaskPagesTests(TestCase):
     def test_index_template_cash(self):
         """Проверяем, кешируется ли главная страница"""
         deleted_post = Post.objects.get(pk=self.posts_data_list[14].id)
-        content_index1 = self.guest_client.get(self.REVERSE_LIBRARY['index']).content
+        content_index1 = self.guest_client.get(
+            self.REVERSE_LIBRARY['index']).content
         deleted_post.delete()
-        content_index2 = self.guest_client.get(self.REVERSE_LIBRARY['index']).content
+        content_index2 = self.guest_client.get(
+            self.REVERSE_LIBRARY['index']).content
         self.assertEqual(content_index1, content_index2)
 
     def test_profile_follow(self):
@@ -314,4 +316,3 @@ class TaskPagesTests(TestCase):
             self.REVERSE_LIBRARY['follow_index'])
         page_obj_not_followed = response_not_followed_index.context['page_obj']
         self.assertNotIn(self.user3_post, page_obj_not_followed)
-
