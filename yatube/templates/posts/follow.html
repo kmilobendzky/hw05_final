@@ -22,7 +22,7 @@
     <img class="card-img my-2" src="{{ im.url }}">
   {% endthumbnail %}
   <p><a href="{% url 'post:post_detail' post.pk %}">подробная информация </a></p>   
-  {% if post.group.slug is not Null%}
+  {% if post.group.slug is not None %}
   <a href="{% url 'post:group_list' post.group.slug %}">все записи группы</a>
   {% else %}
   

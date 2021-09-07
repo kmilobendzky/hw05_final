@@ -294,7 +294,6 @@ class TaskPagesTests(TestCase):
         self.assertTrue(Follow.objects.filter(
             user=self.user2, author=self.user).exists()
         )
-        pass
 
     def test_profile_unfollow(self):
         response_profile_unfollow = self.authorized_client.get(

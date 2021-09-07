@@ -12,7 +12,7 @@ from .models import Follow, Group, Post, User
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    post_list = Post.objects.all()
+    post_list = Post.objects.select_related('group').all()
     paginator = Paginator(post_list, PAGINATOR_CONSTANT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -36,10 +36,10 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    try:
+    if request.user.is_authenticated:
         following = Follow.objects.filter(
             user=request.user, author=author).exists()
-    except TypeError:
+    else:
         following = False
     post_list = author.posts.all()
     paginator = Paginator(post_list, PAGINATOR_CONSTANT)
@@ -127,22 +127,15 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
-    if user == author:
-        return redirect('post:profile', username=user.username)
-    elif Follow.objects.filter(user=user, author=author).exists():
-        return redirect('post:profile', username=user.username)
-    else:
-        Follow.objects.create(user=user, author=author)
-        return redirect('post:profile', username=author.username)
+    if user != author:
+        Follow.objects.get_or_create(user=user, author=author)
+    return redirect('post:profile', username=author.username)
 
 
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
-    if user == author:
-        return redirect('post:profile', username=user.username)
-    else:
-        deleting_follow = Follow.objects.get(user=user, author=author)
-        deleting_follow.delete()
-        return redirect('post:profile', username=author.username)
+    deleting_follow = get_object_or_404(Follow, user=user, author=author)
+    deleting_follow.delete()
+    return redirect('post:profile', username=author.username)
